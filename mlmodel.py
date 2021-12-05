@@ -7,7 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 import nltk
-nltk.download('stopwords')
+
 
 df = pd.read_csv('spam.csv', encoding='ISO-8859-1')
 le = LabelEncoder()
