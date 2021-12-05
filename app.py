@@ -3,7 +3,7 @@ import numpy as np
 from flask import Flask, request, render_template
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem import PorterStemmer
-from nltk.corpus import stopwords
+# from nltk.corpus import stopwords
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split

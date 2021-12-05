@@ -1,6 +1,6 @@
 from nltk.tokenize import RegexpTokenizer, word_tokenize
 from nltk.stem import PorterStemmer
-from nltk.corpus import stopwords
+# from nltk.corpus import stopwords
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
