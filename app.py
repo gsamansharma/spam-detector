@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 import nltk
 from sklearn.naive_bayes import MultinomialNB
 import pickle
-nltk.download('stopwords')
+
 # Initialize the flask App
 app = Flask(__name__)
 model = pickle.load(open('model.pkl', 'rb'))
@@ -30,7 +30,8 @@ X = data.iloc[:, 1]
 y = data.iloc[:, 0]
 
 tokenizer = RegexpTokenizer('\w+')
-sw = set(stopwords.words('english'))
+sw = {'both', 'their', "wasn't", "doesn't", 'shan', 'until', 'it', 'any', 'herself', 'me', 'very', 'hers', 'when', 'wouldn', 'no', 'but', 'more', 'ma', 'an', 'there', 'hadn', 'my', "it's", 'yours', 'shouldn', "that'll", 'up', 'over', 'her', 'be', 's', 'so', "don't", 'at', 'needn', 'doing', 'can', 'further', "shan't", 'about', 'how', 'is', 'above', 'haven', 'such', 'yourself', 'was', 'ourselves', 'does', 'weren', 'm', 'this', 'during', 'all', 'didn', 'they', 'by', 'off', 'for', 'that', 'ain', 'd', "you've", 'theirs', 're', "didn't", 'he', 'isn', 'a', "couldn't", 'do', 'which', 'of', 'why', 'from', 'than', 'few', 'only', 'his', 'own', "aren't", 'them', 'o', 'what', 'because', 'mustn', 'hasn', "weren't", 'to', 'on', 't', 'don', 'doesn', 'before', 'we', "should've", 'y', 'some', "hadn't", 'where', 'being', 'your', 'through', 'down', 'in', 'each', 'if', 'with', 'its', 'out', 've', 'aren', 'myself', 'yourselves', 'whom', "mightn't", 'and', 'mightn', 'should', 'did', "wouldn't", 'i', 'those', 'between', 'once', "won't", 'been', 'or', 'you', 'too', 'have', 'having', 'couldn', 'just', 'were', 'll', 'other', 'themselves', 'same', "shouldn't", 'nor', 'itself', 'as', "she's", "mustn't", 'has', 'wasn', 'not', "needn't", "you'll", "you'd", 'here', 'most', 'ours', 'again', 'had', "hasn't", "haven't", 'him', 'himself', 'below', 'then', 'under', 'now', 'while', 'these', 'will', 'won', 'who', 'she', 'am', 'against', "you're", 'after', 'are', 'the', "isn't", 'our', 'into'}
+
 ps = PorterStemmer()
 
 
