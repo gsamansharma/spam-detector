@@ -18,7 +18,7 @@ X = data.iloc[:, 1]
 y = data.iloc[:, 0]
 
 tokenizer = RegexpTokenizer('\w+')
-sw = set(stopwords.words('english'))
+# sw = set(stopwords.words('english'))
 ps = PorterStemmer()
 
 def getStem(review):
