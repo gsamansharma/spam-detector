@@ -10,10 +10,40 @@ from sklearn.model_selection import train_test_split
 import nltk
 from sklearn.naive_bayes import MultinomialNB
 import pickle
-
+import string
+# nltk.download('stopwords')
 # Initialize the flask App
 app = Flask(__name__)
-model = pickle.load(open('model.pkl', 'rb'))
+
+
+ps = PorterStemmer()
+sw = {'your', 'each', 'too', 'during', 'that', 'again', 'won', "weren't", 'aren', "mightn't", 'own', 'mightn', 'ours', 'it', 'between', "you've", 'will', 'once', 'wouldn', 'its', 'did', 'some', "wasn't", 'because', "shouldn't", "you'd", 'on', 'shan', 'yourselves', 'does', 'having', 'to', 'hers', 'll', 'he', 'itself', 'if', 'had', 'which', 'no', 'are', 'haven', 'don', "you're", "hadn't", "you'll", 'in', 'as', 'and', 'all', 'been', 'through', 'yours', 'be', "won't", 're', "hasn't", 'above', 've', 'me', 'why', 'a', 'shouldn', 'below', 'you', 'doing', "needn't", 'has', 's', 'weren', 'i', "that'll", 'themselves', "don't", 'needn', 'their', 'not', 'the', 'very', 'both', 'y', 'just', "wouldn't", 'other', 'mustn', 'then', 'd', 'she', 'didn', 'an', 'same', 'being', 'up', 'against', 'they', 'is', 'or', "should've", 'o', "shan't", 'whom', 'these', 'herself', 'but', 'under', 'him', 'have', "didn't", 'hasn', 'myself', 'off', 'who', 'when', 'ma', 'most', 't', 'm', 'couldn', "mustn't", 'with', 'was', 'himself', 'until', 'more', "doesn't", 'by', 'now', 'there', 'do', 'after', 'few', 'we', 'any', 'my', 'from', 'yourself', 'wasn', "aren't", "couldn't", "she's", 'out', 'such', 'before', 'where', 'isn', 'down', 'ourselves', 'what', 'while', 'them', 'those', 'only', 'further', "it's", 'nor', 'can', 'theirs', 'his', 'her', 'ain', 'doesn', 'hadn', "haven't", 'should', 'than', 'am', 'so', 'were', 'of', 'for', 'at', 'into', 'how', 'here', 'our', "isn't", 'this', 'about', 'over'}
+
+tfidf = pickle.load(open('vectorizer.pkl','rb'))
+model = pickle.load(open('model.pkl','rb'))
+def transform_text(text):
+    text = text.lower()
+    text = nltk.word_tokenize(text)
+
+    y = []
+    for i in text:
+        if i.isalnum():
+            y.append(i)
+
+    text = y[:]
+    y.clear()
+
+    for i in text:
+        if i not in sw and i not in string.punctuation:
+            y.append(i)
+
+    text = y[:]
+    y.clear()
+
+    for i in text:
+        y.append(ps.stem(i))
+
+    return " ".join(y)
 
 
 # default page of our web-app
@@ -22,53 +52,8 @@ def home():
     return render_template('index.html')
 
 
-df = pd.read_csv('spam.csv', encoding='ISO-8859-1')
-
-data = df[['v1', 'v2']]
-
-X = data.iloc[:, 1]
-y = data.iloc[:, 0]
-
-tokenizer = RegexpTokenizer('\w+')
-sw = {'both', 'their', "wasn't", "doesn't", 'shan', 'until', 'it', 'any', 'herself', 'me', 'very', 'hers', 'when', 'wouldn', 'no', 'but', 'more', 'ma', 'an', 'there', 'hadn', 'my', "it's", 'yours', 'shouldn', "that'll", 'up', 'over', 'her', 'be', 's', 'so', "don't", 'at', 'needn', 'doing', 'can', 'further', "shan't", 'about', 'how', 'is', 'above', 'haven', 'such', 'yourself', 'was', 'ourselves', 'does', 'weren', 'm', 'this', 'during', 'all', 'didn', 'they', 'by', 'off', 'for', 'that', 'ain', 'd', "you've", 'theirs', 're', "didn't", 'he', 'isn', 'a', "couldn't", 'do', 'which', 'of', 'why', 'from', 'than', 'few', 'only', 'his', 'own', "aren't", 'them', 'o', 'what', 'because', 'mustn', 'hasn', "weren't", 'to', 'on', 't', 'don', 'doesn', 'before', 'we', "should've", 'y', 'some', "hadn't", 'where', 'being', 'your', 'through', 'down', 'in', 'each', 'if', 'with', 'its', 'out', 've', 'aren', 'myself', 'yourselves', 'whom', "mightn't", 'and', 'mightn', 'should', 'did', "wouldn't", 'i', 'those', 'between', 'once', "won't", 'been', 'or', 'you', 'too', 'have', 'having', 'couldn', 'just', 'were', 'll', 'other', 'themselves', 'same', "shouldn't", 'nor', 'itself', 'as', "she's", "mustn't", 'has', 'wasn', 'not', "needn't", "you'll", "you'd", 'here', 'most', 'ours', 'again', 'had', "hasn't", "haven't", 'him', 'himself', 'below', 'then', 'under', 'now', 'while', 'these', 'will', 'won', 'who', 'she', 'am', 'against', "you're", 'after', 'are', 'the', "isn't", 'our', 'into'}
-
-ps = PorterStemmer()
 
 
-def getStem(review):
-    review = review.lower()
-    tokens = tokenizer.tokenize(review)
-    removed_stopwords = [w for w in tokens if w not in sw]
-    stemmed_words = [ps.stem(token) for token in removed_stopwords]
-    clean_review = ' '.join(stemmed_words)
-    return clean_review
-
-
-def getDoc(document):
-    d = []
-    for doc in document:
-        d.append(getStem(doc))
-    return d
-
-
-def prepare(message):
-    d = getDoc(message)
-    return cv.transform(d)
-
-
-stemmed_doc = getDoc(X)
-cv = CountVectorizer()
-
-vc = cv.fit_transform(stemmed_doc)
-
-X = vc.todense()
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
-
-naivee = MultinomialNB()
-naivee.fit(X_train, y_train)
-naivee.score(X_test, y_test)
-
-pickle.dump(naivee, open('model.pkl', 'wb'))
 
 
 # To use the predict button in our web-app
@@ -79,30 +64,15 @@ def predict():
     """
 
     p = request.form.get("message")
-
-    model = pickle.load(open('model.pkl', 'rb'))
-
-    # message1 = [
-    # """
-    # England v Macedonia - dont miss the goals/team news. Txt ur national team to 87077 eg ENGLAND to 87077 Try:WALES, SCOTLAND 4txt/̼1.20"""
-    # ]
-    # print(type(message1))
-    # print(message1)
-    message = [""""""]
-    message.insert(0, p)
-
-    print(type(message))
-    print(message)
-    # message.remove(1)
-    print(message)
-    message = prepare(message)
-
-    y_pred = model.predict(message)
-    print(y_pred)
-    output = y_pred[0]
-    print(type(output))
-
-    return render_template('index.html', query='Message: {}'.format(p), prediction_text='The message is a {}'.format(output))
+    transformed_sms = transform_text(p)
+    vector_input = tfidf.transform([transformed_sms])
+    result = model.predict(vector_input)[0]
+    spamresult = ''
+    if result == 1:
+        spamresult = 'Spam'
+    else:
+        spamresult = 'Ham'
+    return render_template('index.html', query='Message: {}'.format(p), prediction_text='The message is a {}'.format(spamresult))
 
 
 if __name__ == "__main__":
