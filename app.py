@@ -11,7 +11,7 @@ import nltk
 from sklearn.naive_bayes import MultinomialNB
 import pickle
 import string
-# nltk.download('stopwords')
+nltk.download('stopwords')
 # Initialize the flask App
 app = Flask(__name__)
 
